@@ -27,7 +27,86 @@
 
             const data = await response.json();
             document.getElementById('newIkasle').innerText = JSON.stringify(data, null, 2);
+            fillForm();
         }
+
+        async function deleteIkasle() {
+        const id = document.getElementById("ikasleID").value;
+
+        const response = await fetch(`/api/ikasleak/${id}`, {
+          method: "DELETE",
+        });
+
+        const data = await response.json();
+        document.getElementById("deletedIkasle").innerText = JSON.stringify(
+          data,
+          null,
+          2
+        );
+        fillForm();
+        }
+
+        async function editIkasle() {
+            const izena = document.getElementById('izena2').value;
+            const adina = document.getElementById('adina2').value;
+            const email = document.getElementById('email2').value;
+            const id = document.getElementById('email-form').value;
+
+            const response = await fetch(`/api/ikasleak/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ izena, adina, email })
+            });
+
+            const data = await response.json();
+            document.getElementById('editedIkasle').innerText = JSON.stringify(data, null, 2);
+            fillForm();
+        }
+
+        async function changeFormValues() {
+            const id = document.getElementById('email-form').value;
+
+            const response = await fetch(`/api/ikasleak/${id}`);
+            const ikaslea = await response.json();
+
+            document.getElementById('izena2').value = ikaslea.izena;
+            document.getElementById('adina2').value = ikaslea.adina;
+            document.getElementById('email2').value = ikaslea.email;
+        }
+
+        async function fillForm() {
+            const editForm = document.getElementById('email-form');
+            const izena = document.getElementById('izena2');
+            const adina = document.getElementById('adina2');
+            const email = document.getElementById('email2');
+
+            editForm.innerHTML = '';
+            izena.value = '';
+            adina.value = '';
+            email.value = '';
+
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.innerText = 'Choose an ikasle';
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            editForm.appendChild(defaultOption);
+
+            const ikasleak = await fetch('/api/ikasleak').then(response => response.json());
+            ikasleak.forEach(ikasle => {
+                let option = document.createElement('option');
+                option.value = ikasle._id;
+                option.innerText = ikasle.email;
+                editForm.appendChild(option);
+            });
+        }
+
+        window.onload = () => {
+            fillForm();
+            document.getElementById('email-form').addEventListener('change', changeFormValues);
+        };
     </script>
 </head>
 <body>
@@ -49,5 +128,33 @@
         <button type="submit">Create</button>
     </form>
     <pre id="newIkasle"></pre>
+
+    <h2>Delete Ikasle</h2>
+    <form onsubmit="event.preventDefault(); deleteIkasle();">
+        <label for="ikasleID">Ikasle ID:</label>
+        <input type="text" id="ikasleID" name="ikasleID" required>
+        <button type="submit">Delete</button>
+    </form>
+    <pre id="deletedIkasle"></pre>
+
+    <h2>Edit Ikasle</h2>
+    <form onsubmit="event.preventDefault(); editIkasle();">
+        <label for="email">Ikasle Email:</label>
+        <select id="email-form" name="email" required>
+        </select>
+        <br>
+        <label for="izena">Izena:</label>
+        <input type="text" id="izena2" name="izena" required>
+        <br>
+        <label for="adina">Adina:</label>
+        <input type="number" id="adina2" name="adina" required>
+        <br>
+        <label for="email">Email:</label>
+        <input type="email" id="email2" name="email" required>
+        <br>
+        <button type="submit">Edit</button>
+    </form>
+    <pre id="editedIkasle"></pre>
+
 </body>
 </html>
