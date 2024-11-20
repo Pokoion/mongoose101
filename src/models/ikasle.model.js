@@ -24,6 +24,6 @@ const ikasleSchema = new mongoose.Schema({
 ikasleSchema.pre('save', function(next) {
     this.izena = this.izena.charAt(0).toUpperCase() + this.izena.slice(1);
     next();
-});
+});     
 
 module.exports = mongoose.model('Ikasle', ikasleSchema);
