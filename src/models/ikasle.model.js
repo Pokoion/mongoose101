@@ -24,6 +24,11 @@ const ikasleSchema = new mongoose.Schema({
 ikasleSchema.pre('save', function(next) {
     this.izena = this.izena.charAt(0).toUpperCase() + this.izena.slice(1);
     next();
-});     
+});
+
+ikasleSchema.path('email').validate(function(email) {
+    return email.includes('@');
+  }, 'Email-ak @ izan behar du');
+  
 
 module.exports = mongoose.model('Ikasle', ikasleSchema);
