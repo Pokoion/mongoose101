@@ -11,6 +11,7 @@ exports.createTalde = async (req, res, next) => {
        next(error);
    }
 };
+
 exports.assignIkasleToTalde = async (req, res, next) => {
    try {
        const { taldeId, ikasleId } = req.body;
@@ -32,7 +33,6 @@ exports.assignIkasleToTalde = async (req, res, next) => {
        next(error);
    }
 };
-
 
 exports.getTaldeak = async (req, res, next) => {
    try {

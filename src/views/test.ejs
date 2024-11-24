@@ -28,6 +28,7 @@
             const data = await response.json();
             document.getElementById('newIkasle').innerText = JSON.stringify(data, null, 2);
             fillForm();
+            changeIkasleak();
         }
 
         async function deleteIkasle() {
@@ -44,6 +45,7 @@
           2
         );
         fillForm();
+        changeIkasleak();
         }
 
         async function editIkasle() {
@@ -63,6 +65,7 @@
             const data = await response.json();
             document.getElementById('editedIkasle').innerText = JSON.stringify(data, null, 2);
             fillForm();
+            changeIkasleak();
         }
 
         async function changeFormValues() {
@@ -103,8 +106,91 @@
             });
         }
 
+        async function createTalde() {
+            const izena = document.getElementById('taldeIzena').value;
+
+            const response = await fetch('/api/taldeak', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ izena })
+            });
+
+            const data = await response.json();
+            document.getElementById('createdTalde').innerText = JSON.stringify(data, null, 2);
+            changeTaldeak();
+        }
+
+        async function assignIkasle() {
+            const taldeId = document.getElementById('talde-ikasle').value;
+            const ikasleId = document.getElementById('Ikasle').value;
+
+            const response = await fetch('/api/taldeak/assign', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ taldeId, ikasleId })
+            });
+
+            const data = await response.json();
+            document.getElementById('assignedIkasle').innerText = JSON.stringify(data, null, 2);
+        }
+
+        async function changeTaldeak() {
+            const taldeak = await fetch('/api/taldeak').then(response => response.json());
+            const taldeComboBox = document.getElementById('talde-ikasle');
+
+            taldeComboBox.innerHTML = '';
+
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.innerText = 'Choose a Talde';
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            taldeComboBox.appendChild(defaultOption);
+
+            taldeak.forEach(talde => {
+                let option = document.createElement('option');
+                option.value = talde._id;
+                option.innerText = talde.izena;
+                taldeComboBox.appendChild(option);
+            });
+        }
+
+        async function changeIkasleak(){
+            const ikasleak = await fetch('/api/ikasleak').then(response => response.json());
+            const ikasleComboBox = document.getElementById('Ikasle');
+
+            ikasleComboBox.innerHTML = '';
+
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.innerText = 'Choose an Ikasle';
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            ikasleComboBox.appendChild(defaultOption);
+
+            ikasleak.forEach(ikasle => {
+                let option = document.createElement('option');
+                option.value = ikasle._id;
+                option.innerText = ikasle.email;
+                ikasleComboBox.appendChild(option);
+            });
+        }
+
+        async function getTaldeak() {
+            const response = await fetch('/api/taldeak').then(response => response.json());
+            document.getElementById('taldeak').innerText = JSON.stringify(response, null, 2);
+        }
+
+
+
         window.onload = () => {
             fillForm();
+            changeTaldeak();
+            changeIkasleak()
             document.getElementById('email-form').addEventListener('change', changeFormValues);
         };
     </script>
@@ -155,6 +241,32 @@
         <button type="submit">Edit</button>
     </form>
     <pre id="editedIkasle"></pre>
+    <br>
+    <h2>Create Talde</h2>
+    <form onsubmit="event.preventDefault(); createTalde();">
+        <label for="taldeIzena">Talde Izena:</label>
+        <input type="text" id="taldeIzena" name="taldeIzena" required>
+        <button type="submit">Create</button>
+    </form>
+    <pre id="createdTalde"></pre>
+    <br>
+    <h2>Assign Ikasle to Talde</h2>
+    <form onsubmit="event.preventDefault(); assignIkasle();">
+        <label for="talde">Talde:</label>
+        <select id="talde-ikasle" name="talde-ikasle" required>
+        </select>
+        <br>
+        <label for="ikasle">Ikasle:</label>
+        <select id="Ikasle" name="Ikasle" required>
+        </select>
+        <br>
+        <button type="submit">Assign</button>
+    </form>
+    <pre id="assignedIkasle"></pre>
+    <br>
+    <h2>Get Taldeak</h2>
+    <button onclick="getTaldeak()">Get Taldeak</button>
+    <pre id="taldeak"></pre>
 
 </body>
 </html>
